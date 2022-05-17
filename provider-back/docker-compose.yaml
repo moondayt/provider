@@ -1,0 +1,21 @@
+version: '3'
+services:
+#  server:
+#    build:
+#      context: .
+#    environment:
+#      POSTGRES_HOST: postgres
+#    ports:
+#      - 8001:8001
+
+  postgres:
+    image: postgres:12-alpine
+    environment:
+      - POSTGRES_PASSWORD=Initial0
+    volumes:
+      - pg:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+volumes:
+  pg:

@@ -1,0 +1,6 @@
+
+.list { /*общий параметр для всех блоков */
+    position: absolute;
+     z-index: 2;
+
+    }

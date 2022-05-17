@@ -1,0 +1,16 @@
+.top1 {
+  top: 100px;
+  font-size: xx-large;
+}
+.pay-position {
+  top: 20px;
+  position: relative;
+}
+.pay-button {
+  position: absolute;
+  top: 30px;
+  right: 80px;
+}
+.border {
+  border-radius: 10px;
+}
