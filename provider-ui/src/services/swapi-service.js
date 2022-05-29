@@ -1,4 +1,3 @@
-import React from "react";
 import jwt from "jwt-decode";
 
 
@@ -13,7 +12,19 @@ export default class SwapiService {
             throw new Error('Redirect to login')
         }
         if (!res.ok) {
-            throw new Error(`Could not fetch ${url}` + `, received ${res.status}`)
+            throw new Error(`Could not fetch ${url}, received ${res.status}`)
+        }
+        return await res.json();
+    };
+
+    getResourceByPut = async (url, payload, jwtToken) => {
+        const res = await this.putResource(url, payload, jwtToken);
+        if (res.status === 403 ||
+            res.status === 401) {
+            throw new Error('Redirect to login')
+        }
+        if (!res.ok) {
+            throw new Error(`Could not fetch ${url}, received ${res.status}`)
         }
         return await res.json();
     };
@@ -32,7 +43,21 @@ export default class SwapiService {
         return res;
     }
 
-    async postResource(url, payload) {
+    async putResource(url, payload, jwtToken) {
+        const res = await fetch(`${this._apiBase}${url}`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                    'Authorization': `Bearer ${jwtToken}`
+                },
+                body: JSON.stringify(payload)
+            });
+        return res;
+    }
+
+    async postResourceNoAuth(url, payload) {
         console.log(payload)
         const res = await fetch(`${this._apiBase}${url}`,
             {
@@ -56,13 +81,14 @@ export default class SwapiService {
                     'Authorization': `Bearer ${jwtToken}`
                 }
             });
-        if (res.status == 403 ||
-            res.status == 401) {
+        if (res.status === 403 ||
+            res.status === 401) {
             throw new Error('Redirect to login')
         }
         if (!res.ok) {
-            throw new Error(`Could not fetch ${url}` + `, received ${res.status}`)
+            throw new Error(`Could not fetch ${url}, received ${res.status}`)
         }
+
         return await res.json();
     };
 
@@ -71,7 +97,13 @@ export default class SwapiService {
     };
 
     register = async (payload) => {
-        return await this.postResource(`/clients/`, payload, null);
+        return await this.postResourceNoAuth(`/clients/`, payload);
+    };
+
+    updateClient = async (payload, jwtToken) => {
+        const {clientId} = jwt(jwtToken);
+        payload.id = clientId;
+        return await this.putResource(`/clients/${clientId}`, payload, jwtToken);
     };
 
     getClient = async (jwtToken) => {
@@ -84,15 +116,16 @@ export default class SwapiService {
         const res = await this.getResourceByGet(`/tariffs/`, jwtToken);
         return res;
     };
+    getTariff = async (tariffId, jwtToken) => {
+        return await this.getResourceByGet(`/tariffs/${tariffId}`, jwtToken);
+    };
     getPayments = async (accountId, jwtToken) => {
         const res = await this.getResourceByGet(`/payments?accountId=${accountId}`, jwtToken);
         return res;
     };
 
     getAccount = async (jwtToken) => {
-        const {clientId} = jwt(jwtToken);
-        const res = await this.getResourceByGet(`/accounts?clientId=${clientId}`, jwtToken );
-        return res;
+        return await this.getResourceByGet(`/accounts`, jwtToken );
     };
 
     addPayment = async (payment, jwtToken) => {
@@ -100,25 +133,19 @@ export default class SwapiService {
         return await this.getResourceByPost(`/payments/`, payment, jwtToken);
     };
 
-    updateAccount = async (jwtToken, tarrifId) => {
-        console.log('ACCOUNT')
-        const {clientId} = jwt(jwtToken);
-        const payload =
-            {
-                "id": 1,
-                "tarrifId": tarrifId,
-                "clientId": clientId,
-                "address": null,
-                "status": null,
-                "balance": null,
-                "dateClose": null
-            }
-        const res = await this.getResourceByPost(`/accounts/`, payload, jwtToken);
+    createAccount = async (payload) => {
+        const res = await this.postResourceNoAuth(`/accounts/`, payload);
+        return res;
+    };
+
+
+    updateAccount = async (jwtToken, payload) => {
+        const res = await this.getResourceByPut(`/accounts/${payload.id}`, payload, jwtToken);
         return res;
     };
 
     async findByLogin(login){
-        return await this.postResource(`/clients/findByLogin/`, {"login": login});
+        return await this.postResourceNoAuth(`/clients/findByLogin/`, {"login": login});
     };
 
     _extractId = (item) => {

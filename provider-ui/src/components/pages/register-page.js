@@ -1,39 +1,32 @@
 import React, {useState} from 'react';
-import {Link, Redirect, withRouter} from 'react-router-dom';
+import {Redirect, withRouter} from 'react-router-dom';
 import SwapiService from "../../services/swapi-service";
 
-const RegisterPage = ({history}) => {
+const RegisterPage = ({history, isLoggedIn}) => {
 
     const [errorMessages, setErrorMessages] = useState('');
     const [loginError, setLoginError] = useState('');
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        if (loginError !== '') {
-            return;
-        }
-
-        var {name, lastname, login, password} = document.forms[0];
-        let res = new SwapiService().register(
-            {
-                name: name.value,
-                lastname: lastname.value,
-                login: login.value,
-                password: password.value
-            }
-        ).then((res) => {
-            if (!res.ok) {
-                return res.json();
-            } else {
-                history.push(`/login`);
-            }
-        }).then(data => {
-            if (data) {
-                console.log(data)
-                setErrorMessages(data.message)
-            }
-        });
+    if (isLoggedIn) {
+        return <Redirect to="/"/>;
     }
+
+    const createAccount = (clientId) => {
+        var {address} = document.forms[0];
+        new SwapiService().createAccount({
+                address: address.value,
+                status: 'blocked',
+                balance: 0,
+                clientId: clientId,
+                tariffId: 1
+            }
+        )
+            .then(res => {
+                return res.json();
+            }).then(data => {
+            history.push(`/login`);
+        })
+    };
 
     const checkLogin = () => {
         var {login} = document.forms[0];
@@ -48,6 +41,38 @@ const RegisterPage = ({history}) => {
             }
         })
     };
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        if (loginError !== '') {
+            return;
+        }
+
+        var {name, surename, middlename, address, login, password, phone, email} = document.forms[0];
+        new SwapiService().register(
+            {
+                name: name.value,
+                surename: surename.value,
+                middlename: middlename.value,
+                address: address.value,
+                login: login.value,
+                password: password.value,
+                phone: phone.value,
+                email: email.value,
+                type: 'client'
+            }
+        ).then((res) => {
+            return res.json();
+        }).then(data => {
+            if (data.message) {
+                console.log(data)
+                setErrorMessages(data.message)
+            } else {
+                console.log(data)
+                return createAccount(data.id)
+            }
+        });
+    }
 
     const renderErrorMessage = () => (
         errorMessages !== "" && (
@@ -72,8 +97,8 @@ const RegisterPage = ({history}) => {
                            className="form-control"
                            placeholder="Введите имя"></input>
                     <label htmlFor="name" className="form-label mt-4">Фамилия</label>
-                    <input id="lastname"
-                           name="lastname"
+                    <input id="surename"
+                           name="surename"
                            value="Kollmann"
                            className="form-control"
                            placeholder="Введите логин"></input>
@@ -83,12 +108,12 @@ const RegisterPage = ({history}) => {
                         // value="serg"
                            className="form-control"
                            placeholder="Введите логин"></input>
-                    <label htmlFor="name" className="form-label mt-4">Адресс</label>
+                    <label htmlFor="name" className="form-label mt-4">Адрес</label>
                     <input id="address"
                            name="address"
                            value="Владимир "
                            className="form-control"
-                           placeholder="Введите адресс"></input>
+                           placeholder="Введите Адрес"></input>
                     <label htmlFor="name" className="form-label mt-4">email</label>
                     <input id="email"
                            name="email"
@@ -96,8 +121,8 @@ const RegisterPage = ({history}) => {
                            className="form-control"
                            placeholder="Введите почту"></input>
                     <label htmlFor="name" className="form-label mt-4">Телефон</label>
-                    <input id="telephone"
-                           name="telephone"
+                    <input id="phone"
+                           name="phone"
                         // value="serg"
                            className="form-control"
                            placeholder="Введите телефон"></input>
@@ -127,7 +152,7 @@ const RegisterPage = ({history}) => {
                 </div>
                 <div className="form-group">
                     <button className="btn btn-primary" type="submit">
-                        Login
+                        Регистрация
                     </button>
                 </div>
             </form>

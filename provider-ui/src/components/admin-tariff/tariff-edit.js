@@ -1,13 +1,14 @@
 import React, {Component} from 'react';
 
-import './tariff-details.css';
+import './tariff-edit.css';
 import ErrorIndicator from "../error-indicator";
 import Spinner from "../spinner";
 import ErrorAuth from "../error-auth";
 import Menu from "../menu/menu";
 import Tariffs from "../tarrifs/tariffs";
+import TariffsList from "./tariffsList";
 
-export default class TariffDetails extends Component {
+export default class TariffEdit extends Component {
 
     state = {
         data: null,
@@ -80,15 +81,16 @@ export default class TariffDetails extends Component {
         if (!isLoggedIn) {
             return <ErrorAuth/>
         }
-        const errorMessage = hasError ? <ErrorIndicator/> : null;
-        const spinner = !data ? <Spinner /> : null;
-        const content = data ? <Tariffs tariffData={data} updateTariff={this.updateTariff}
-                                        current={this.state.account.tariffId}></Tariffs> : null;
+        if (hasError) {
+            return <ErrorIndicator/>
+        }
+        if (!data) {
+            return <Spinner/>;
+        }
         return (
-            <div className="person-details card top">
-                {errorMessage}
-                {spinner}
-                {content}
+            <div>
+                <TariffsList tariffData={data} updateTariff={this.updateTariff}
+                         current={this.state.account.tariffId}></TariffsList>
             </div>
         )
     }

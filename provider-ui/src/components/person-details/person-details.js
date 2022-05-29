@@ -4,7 +4,6 @@ import './person-details.css';
 import ErrorIndicator from "../error-indicator";
 import Spinner from "../spinner";
 import ErrorAuth from "../error-auth";
-import Menu from "../menu/menu";
 import MainPage from "../main-page/main-page";
 
 export default class PersonDetails extends Component {
@@ -12,7 +11,7 @@ export default class PersonDetails extends Component {
     state = {
         data: null,
         hasError: false,
-        isLoggedIn: true
+        isLoggedIn: this.props.isLoggedIn
     };
 
     onError = (error) => {
@@ -40,20 +39,20 @@ export default class PersonDetails extends Component {
 
     render() {
         const {hasError, data, isLoggedIn} = this.state;
+        console.log(`My isloggedin=${isLoggedIn}`)
         if (!isLoggedIn) {
             return <ErrorAuth/>
         }
-        if (hasError) {
-            return <ErrorIndicator/>
-        }
-        if (!data) {
-            return <Spinner/>;
-        }
+        const errorMessage = hasError ? <ErrorIndicator/> : null;
+        const spinner = !data ? <Spinner /> : null;
+        const content = data ? <MainPage {...data}/> : null;
+
         return (
-            <div>
-                <Menu/>
-                <MainPage {...data}/>
+            <div className="person-details item-details card card-position col-md-6">
+                {errorMessage}
+                {spinner}
+                {content}
             </div>
-        )
+         )
     }
 }

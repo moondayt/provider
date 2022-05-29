@@ -1,33 +1,34 @@
 const cors = require("cors");
+const auth = require("../middleware/auth");
+const config = process.env;
 module.exports = app => {
-  const account = require("../controllers/account.controller.js");
+    const account = require("../controllers/account.controller.js");
 
-  var router = require("express").Router();
+    var router = require("express").Router();
 
-  // Create a new Tutorial
-  router.post("/", account.create);
+    // Create a new Account
+    router.post("/", account.create);
 
-  // Retrieve all Tutorials
-  router.get("/", account.findAll);
+    // Retrieve account by ClientId
+    router.get("/", auth, account.findByClientId);
 
-  // Retrieve all published Tutorials
-  router.get("/published", account.findAllPublished);
+    // Retrieve a single Account with id
+    router.get("/:id", account.findOne);
 
-  // Retrieve a single Tutorial with id
-  router.get("/:id", account.findOne);
+    // Update a Account with id
+    router.put("/:id", account.update);
 
-  // Update a Tutorial with id
-  router.put("/:id", account.update);
+    // Delete a Account with id
+    router.delete("/:id", account.delete);
 
-  // Delete a Tutorial with id
-  router.delete("/:id", account.delete);
+    // Delete all Accounts
+    router.delete("/", account.deleteAll);
 
-  // Delete all Tutorials
-  router.delete("/", account.deleteAll);
+    if (config.CORS_ENABLES !== 'true') {
+        app.use(cors({
+            origin: '*'
+        }));
+    }
 
-  app.use(cors({
-    origin: '*'
-  }));
-
-  app.use("/api/accounts", router);
+    app.use("/api/accounts", router);
 };

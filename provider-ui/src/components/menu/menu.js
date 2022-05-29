@@ -1,29 +1,35 @@
 import React, {Component} from 'react';
 import './menu.css';
 import {Link} from "react-router-dom";
-import History from "../pay-history/history";
+import jwt from "jwt-decode";
 
 export default class Menu extends Component {
     render() {
-const class1="btn btn-secondary"
-        return (
-            <ul className="list">
-                <il>
-                    <Link to="/" ><button type="button" className={class1}>Главная</button></Link>
-                </il>
-                <il>
-                    <Link to="/tariff" ><button type="button" className={class1}> Тарифы</button></Link>
-                </il>
-                <il>
-                    <Link to="/account" ><button type="button" className={class1}> Оплата</button></Link>
-                </il>
-                <il>
-                    <Link to="/payments" ><button type="button" className={class1}> История Платежей</button></Link>
-                </il>
-                <il>
-                    <Link to="/client" ><button type="button" className={class1}> Инфо</button></Link>
-                </il>
-            </ul>
-        )
+        const {jwtToken, onLogout} = this.props;
+        const {type} = jwt(jwtToken);
+        const class1 = "btn btn-secondary"
+        if (type === 'client'){
+            return (
+                <div className="list btn-group list" role="group" aria-label="Basic example">
+                    <Link className={class1} to="/">Главная</Link>
+                    <Link className={class1} to="/tariff">Тарифы</Link>
+                    <Link className={class1} to="/payments">Платежи</Link>
+                    <Link className={class1} to="/client">Инфо</Link>
+                    <Link className={class1} to="/login" onClick={onLogout}>Выход</Link>
+                </div>
+            )
+        }
+
+        if (type === 'admin'){
+            return (
+                <div className="list btn-group list" role="group" aria-label="Basic example">
+                    <Link className={class1} to="/">Главная</Link>
+                    <Link className={class1} to="/admin/tariff">Редактирование Тарифов</Link>
+                    <Link className={class1} to="/admin/client">Редактирование клиентов</Link>
+                    <Link className={class1} to="/client">Инфо</Link>
+                    <Link className={class1} to="/login" onClick={onLogout}>Выход</Link>
+                </div>
+            )
+        }
     };
 }
