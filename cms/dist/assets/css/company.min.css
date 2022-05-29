@@ -1,0 +1,43 @@
+/* ===== Company ===== */
+.company__inner {
+  padding: 25px 100px;
+  background-color: #f2f3f4;
+  margin: 0 60px; }
+
+.company__text {
+  margin: 10px 0;
+  font-size: 15px;
+  line-height: 1.2; }
+
+.company__text:nth-child(5) {
+  margin-top: 35px; }
+
+.payments__company {
+  padding: 65px 40px; }
+
+.company {
+  overflow: hidden;
+  background-color: #f2f3f4; }
+
+.company__item {
+  display: flex;
+  flex-wrap: wrap; }
+
+.company__photo {
+  width: 44%;
+  height: 540px;
+  position: relative; }
+
+.company__img {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  z-index: 1;
+  transform: translateY(-50%); }
+
+.company__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 56%;
+  padding-left: 80px; }

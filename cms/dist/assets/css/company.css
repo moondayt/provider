@@ -1,0 +1,20 @@
+/* ===== Company ===== */
+.company__inner {
+    padding: 25px 100px;
+    background-color: #f2f3f4;
+    margin: 0 60px;
+}
+
+.company__text {
+    margin: 10px 0;
+    font-size: 15px;
+    line-height: 1.2;
+}
+
+.company__text:nth-child(5) {
+    margin-top: 35px;
+}
+
+.payments__company {
+    padding: 65px 40px;
+}
